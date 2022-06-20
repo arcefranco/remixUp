@@ -1,36 +1,60 @@
 
-
 const db = require('../database/database')
+const Op = require('Sequelize').Op
+const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
+require("dotenv").config();
 const User = db.users
 
 const createUser = async (req, res) => { 
     const {username, password, email, img_url} = req.body
-    
-    
+
     if(!username || !password || !email){
         res.status(500).send('username, password & email are required')
     }
-   
+    const unique = await User.findOne({
+        where:{
+            [Op.or]: {
+                username:
+                    {
+                        [Op.eq]: username
+                    },
+
+                email: {
+                    [Op.eq]: email
+                }
+            }
+        }
+    })
+
+    if (!unique) {
+    const hash = await bcrypt.hash(password, 8)
     const data = {
         username: username,
-        password: password,
+        password: hash,
         email: email,
         img_url:img_url
     }
 
     const user = await User.create(data)
     if(user){
-        return res.status(200).send(user)
+       
+        const token = jwt.sign({id: user.id}, process.env.SECRET, {
+            expiresIn: 60 * 60 * 24 
+        })
+        return res.json({auth:true, token})
     } else {
         return res.status(500).send('Something wrong!')
+    } 
+    } else { 
+        return res.status(404).send('Existing username or email')
     }
+    
 }
-
 const getAllUsers = async (req, res) => {
     const allUsers = await User.findAll()
     res.send(allUsers)
 }
-
 const getUsersById = async (req, res) => {
 const {id} = req.params 
 
@@ -43,7 +67,6 @@ const {id} = req.params
         finded ? res.send(finded) : res.status(500).send('user does not exist')
     
 }
-
 const deleteUser = async (req, res) => {
     const {id} = req.params
 
@@ -70,7 +93,6 @@ const deleteUser = async (req, res) => {
     }
   
 }
-
 const updateUser = async (req, res) => {
     const {id} = req.params
     const {body} = req
@@ -102,12 +124,42 @@ const updateUser = async (req, res) => {
         })
     }
 }
+const login = async (req, res) => {
+    const {email} = req.body
+    const {password} = req.body
+    const user = await User.findOne({
+        where:{
+            email: email
+        }
+    })
+    
+    if (!email || !password) {
+        res.status(400).send({
+            status: false,
+            message: "Email & password are requiered"
+        });
+    }
+    if(user){
+        
+       const compare = await bcrypt.compare(password, user.password)
+   
+       compare === true ? res.status(200).send('login succeed!')
+       : res.status(500).send('wrong password')
+    }else{
+        res.status(400).send({
+            message: "User does not exist"
+        })
+    }
+}
+
+
 
 module.exports =  {
     createUser,
     getUsersById,
     getAllUsers,
     deleteUser,
-    updateUser
+    updateUser,
+    login
 }
 
