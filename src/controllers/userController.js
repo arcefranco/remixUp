@@ -143,8 +143,8 @@ const login = async (req, res) => {
         
        const compare = await bcrypt.compare(password, user.password)
    
-       compare === true ? res.status(200).send('login succeed!')
-       : res.status(500).send('wrong password')
+       compare === true ? res.status(200).send(true)
+       : res.status(500).send(false)
     }else{
         res.status(400).send({
             message: "User does not exist"
