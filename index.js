@@ -5,12 +5,13 @@ const morgan = require('morgan')
 const jwt = require('jsonwebtoken')
 const app = express();
 
-var corOptions = {
+/* var corOptions = {
     origin: 'https://localhost:3002'
-}
-
-app.use(cors(corOptions))
+} */
+/* 
+app.use(cors(corOptions)) */
 app.use(express.json())
+app.use(cors());
 app.use(express.urlencoded({extended:true}))
 app.use(morgan('dev'))
 app.use((req, res, next) => {
