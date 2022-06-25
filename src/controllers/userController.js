@@ -2,9 +2,11 @@
 const db = require('../database/database')
 const Op = require('Sequelize').Op
 const bcrypt = require("bcrypt")
+const asyncHandler = require('express-async-handler')
 const jwt = require("jsonwebtoken")
 require("dotenv").config();
 const User = db.users
+
 
 const createUser = async (req, res) => { 
     const {username, password, email, img_url} = req.body
@@ -38,11 +40,17 @@ const createUser = async (req, res) => {
 
     const user = await User.create(data)
     if(user){
+        res.status(201).json({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            token: generateToken(user.id)
+        })
        
-        const token = jwt.sign({id: user.id}, process.env.SECRET, {
+   /*      const token = jwt.sign({id: user.id}, process.env.SECRET, {
             expiresIn: 60 * 60 * 24 
         })
-        return res.json({auth:true, token})
+        return res.json({auth:true, token}) */
     } else {
         return res.status(500).send('Something wrong!')
     } 
@@ -55,7 +63,7 @@ const getAllUsers = async (req, res) => {
     const allUsers = await User.findAll()
     res.send(allUsers)
 }
-const getUsersById = async (req, res) => {
+/* const getUsersById = async (req, res) => {
 const {id} = req.params 
 
   
@@ -64,9 +72,9 @@ const {id} = req.params
                 id: id
             }
         })
-        finded ? res.send(finded) : res.status(500).send('user does not exist')
+        finded ? res.send(finded) : res.status(500).send('userrr does not exist')
     
-}
+} */
 const deleteUser = async (req, res) => {
     const {id} = req.params
 
@@ -133,33 +141,46 @@ const login = async (req, res) => {
         }
     })
     
-    if (!email || !password) {
+    if (!email || !password) {   
         res.status(400).send({
             status: false,
             message: "Email & password are requiered"
         });
     }
-    if(user){
-        
-       const compare = await bcrypt.compare(password, user.password)
-   
-       compare === true ? res.status(200).send(true)
-       : res.status(500).send(false)
+    if(user &&(await bcrypt.compare(password, user.password))){
+
+         res.status(201).send({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            token: generateToken(user.id)
+        })
+
     }else{
         res.status(400).send({
-            message: "User does not exist"
+            message: "Invalid credentials"
         })
     }
 }
 
+const generateToken = (id) => {
+    return jwt.sign({id}, process.env.SECRET, {
+        expiresIn: 8640
+    })
+    
+}
 
+const getMe = asyncHandler(async (req, res) => {
+
+    res.status(200).json(req.user)
+  })
 
 module.exports =  {
     createUser,
-    getUsersById,
     getAllUsers,
     deleteUser,
     updateUser,
+    getMe,
     login
 }
 
