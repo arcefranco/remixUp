@@ -26,7 +26,7 @@ const createUser = async (req, res) => {
                     [Op.eq]: email
                 }
             }
-        }
+        } 
     })
 
     if (!unique) {
@@ -47,10 +47,7 @@ const createUser = async (req, res) => {
             token: generateToken(user.id)
         })
        
-   /*      const token = jwt.sign({id: user.id}, process.env.SECRET, {
-            expiresIn: 60 * 60 * 24 
-        })
-        return res.json({auth:true, token}) */
+  
     } else {
         return res.status(500).send('Something wrong!')
     } 
