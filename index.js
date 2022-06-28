@@ -1,6 +1,7 @@
 const express = require("express")
 const cors = require("cors")
 const userRoutes =require('./src/routes/userRouter')
+const reviewRoutes = require('./src/routes/reviewRouter')
 const morgan = require('morgan')
 const jwt = require('jsonwebtoken')
 const app = express();
@@ -30,6 +31,7 @@ app.use((req, res, next) => {
   });
 
 app.use('/users', userRoutes)
+app.use('/reviews', reviewRoutes)
 
   
 

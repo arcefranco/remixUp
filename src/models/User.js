@@ -3,8 +3,8 @@
 module.exports = (sequelize, DataTypes) => {
 
 
-const User = sequelize.define("users",{
-    id: {
+const users = sequelize.define("users",{
+    userId: {
         type: DataTypes.UUID,
         allowNull: false,
         defaultValue: DataTypes.UUIDV4,
@@ -30,8 +30,8 @@ const User = sequelize.define("users",{
         type: DataTypes.INTEGER,
     }
 })
-
-return User
+ 
+return users
 }
 
 

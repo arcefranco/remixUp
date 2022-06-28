@@ -9,7 +9,7 @@ const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD,{
 })
 
 sequelize.authenticate()
-.then(() => {
+.then(() => { 
     console.log('DB connected')
 })
 .catch(err => {
@@ -21,8 +21,13 @@ db.Sequelize = Sequelize
 db.sequelize = sequelize
 
 db.users = require('../models/User.js')(sequelize, DataTypes)
+db.review = require('../models/Review.js')(sequelize, DataTypes)
+/* 
+const {users, review} = sequelize.models */
+db.users.hasMany(db.review) 
+db.review.belongsTo(db.users)
 
-db.sequelize.sync({force: false})
+db.sequelize.sync({force: true}) 
 .then(()=> {
     console.log('re-sync done!')
 })
