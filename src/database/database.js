@@ -22,6 +22,7 @@ db.sequelize = sequelize
 
 db.users = require('../models/User.js')(sequelize, DataTypes)
 db.review = require('../models/Review.js')(sequelize, DataTypes)
+db.record = require('../models/Record')(sequelize, DataTypes)
 /* 
 const {users, review} = sequelize.models */
 db.users.hasMany(db.review) 

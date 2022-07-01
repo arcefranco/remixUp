@@ -4,7 +4,8 @@ const review = db.review
 
 const postReview = async (req, res) => {
 
-const {title, 
+const {
+        title, 
         reviewText, 
         rating, 
         fav,
@@ -26,6 +27,7 @@ const data = {
 }
 
 const newReview = await review.create(data)
+console.log(newReview.__proto__)
 newReview.setUser(id)
 if(newReview){
     res.status(201).json({
@@ -52,6 +54,30 @@ if(newReview){
 
 
 }
+
+ const getMyReviews = async (req, res) => {
+    const {id} = req.body
+    if(!id){
+        res.status(500).send('You must be logged in')
+    }else{
+      try {
+        const myReviews = await review.findAll({
+            where: {
+                userUserId: id
+            }
+        })
+        res.json(myReviews)
+
+    } catch (error) {
+        console.log(error)
+        res.status(404).send(error)
+    }  
+    }
+    
+    
+    
+} 
 module.exports =  {
-  postReview
+  postReview,
+  getMyReviews
 }

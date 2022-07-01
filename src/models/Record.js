@@ -1,39 +1,32 @@
 module.exports = (sequelize, DataTypes) => {
 
 
-    const review = sequelize.define("review",{
-        reviewId: {
+    const record = sequelize.define("record",{
+        recordId: {
             type: DataTypes.UUID,
             allowNull: false,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
         },
-        title:{
+        album:{
             type: DataTypes.STRING,
             allowNull: false,
         },
         year:{
             type: DataTypes.INTEGER, 
-  
+        
         },
         img_url:{
             type: DataTypes.STRING,
             
         },
-        reviewText:{
-            type: DataTypes.STRING(1234),
-            allowNull: false, 
-        },
-        rating:{
-            type: DataTypes.INTEGER,
-        },
-        fav:{
-            type: DataTypes.BOOLEAN,
+        artist: {
+            type: DataTypes.STRING, 
+             allowNull: false,
         }
         
         
     })
   
-    return review
+    return record
 }
-    
