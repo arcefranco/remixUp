@@ -34,7 +34,7 @@ app.use("/reviews", reviewRoutes);
 app.use("/records", recordRoutes);
 
 app.get("/", (req, res) => {
-  res.json("Welcome to API remixUp");
+  res.json("Welcome to API remixUp!!!");
 });
 
 const PORT = process.env.PORT || 3002;
